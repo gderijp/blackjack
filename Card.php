@@ -2,19 +2,23 @@
 
 class Card
 {
-    public string $suit;
-    public string $value;
+    private string $suit;
+    private int|string $value;
 
-    public function __construct(string $suit, string $value)
+    public function __construct(string $suit, int|string $value)
     {
-        $this->suit = $suit;
-        $this->value = $value;
+        $this->suit = $this->validateSuit($suit);
+        $this->value = $this->validateValue($value);
     }
 
     public function show(): string
     {
-        $suit = '';
-        switch ($this->suit) {
+        return $this->suit . " " . $this->value . PHP_EOL;
+    }
+
+    private function validateSuit(string $suit): string
+    {
+        switch ($suit) {
             case 'harten':
                 $suit = '♥';
                 break;
@@ -29,22 +33,37 @@ class Card
                 break;
 
             default:
-                return 'fout' . PHP_EOL;
+                throw new InvalidArgumentException("Invalid suit given" . PHP_EOL);
                 break;
         }
 
-        if ($this->value == 'koning') {
-            $this->value = 'K';
-        }
+        return $suit;
+    }
 
-        if ($this->value == 'boer') {
-            $this->value = 'B';
+    private function validateValue(int|string $value): string
+    {
+        if (is_int($value) && $value >= 2 && $value <= 10) {
+            return $value;
+        } elseif (!is_int($value)) {
+            switch ($value) {
+                case 'aas':
+                    return 'A';
+                    break;
+                case 'koning':
+                    return 'K';
+                    break;
+                case 'vrouw':
+                    return 'V';
+                    break;
+                case 'boer':
+                    return 'B';
+                    break;
+                default:
+                    throw new InvalidArgumentException("Error" . PHP_EOL);
+                    break;
+            }
+        } else {
+            throw new InvalidArgumentException("Value should be between 2 and 10" . PHP_EOL);
         }
-
-        if ($this->value == 'vrouw') {
-            $this->value = 'V';
-        }
-
-        return $suit . " " . $this->value . PHP_EOL;
     }
 }
