@@ -1,15 +1,14 @@
 <?php
 
 require_once('Card.php');
+require_once('Deck.php');
+require_once('Player.php');
 
-$card1 = new Card('klaveren', 'boer');
-echo $card1->show();
+$deck = new Deck();
+$player = new Player('Giorgio');
 
-$card2 = new Card('schoppen', 'aas');
-echo $card2->show();
+$player->addCard($deck->drawCard());
+$player->addCard($deck->drawCard());
+$player->addCard($deck->drawCard());
 
-$card3 = new Card('harten', 8);
-echo $card3->show();
-
-$card4 = new Card('schoffels', 2);
-echo $card4->show();
+echo $player->showHand() . PHP_EOL;

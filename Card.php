@@ -3,9 +3,9 @@
 class Card
 {
     private string $suit;
-    private int|string $value;
+    private string $value;
 
-    public function __construct(string $suit, int|string $value)
+    public function __construct(string $suit, string $value)
     {
         $this->suit = $this->validateSuit($suit);
         $this->value = $this->validateValue($value);
@@ -13,7 +13,7 @@ class Card
 
     public function show(): string
     {
-        return $this->suit . " " . $this->value . PHP_EOL;
+        return $this->suit . $this->value;
     }
 
     private function validateSuit(string $suit): string
@@ -31,7 +31,6 @@ class Card
             case 'schoppen':
                 $suit = '♠';
                 break;
-
             default:
                 throw new InvalidArgumentException("Invalid suit given" . PHP_EOL);
                 break;
@@ -40,9 +39,9 @@ class Card
         return $suit;
     }
 
-    private function validateValue(int|string $value): string
+    private function validateValue(string $value): string
     {
-        if (is_int($value) && $value >= 2 && $value <= 10) {
+        if ($value >= 2 && $value <= 10) {
             return $value;
         } elseif (!is_int($value)) {
             switch ($value) {
