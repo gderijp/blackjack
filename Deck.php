@@ -1,6 +1,6 @@
 <?php
 
-require_once('Card.php');
+require_once 'Card.php';
 
 class Deck
 {
