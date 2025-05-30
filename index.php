@@ -6,7 +6,7 @@ require_once 'Player.php';
 require_once 'Blackjack.php';
 
 // Vraag de naam van de speler
-$blackjack = new Blackjack;
+$blackjack = new Blackjack();
 $player = new Player(readline("Wat is je naam?... "), $blackjack);
 $deck = new Deck();
 
@@ -35,7 +35,8 @@ while ($gameIsActive) {
 
         // check if the user > 21 OR === 21
         $score = $player->getScore();
-        if (str_contains($score, 'Blackjack') 
+        if (
+            str_contains($score, 'Blackjack')
             || str_contains($score, 'Busted') 
             || str_contains($score, 'Twenty-One') 
             || str_contains($score, 'Five Card Charlie')
