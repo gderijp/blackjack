@@ -35,7 +35,6 @@ class Card
             case 'B':
                 return 10;
                 break;
-
             default:
                 throw new InvalidArgumentException("Invalid value" . PHP_EOL);
                 break;

@@ -35,7 +35,11 @@ while ($gameIsActive) {
 
         // check if the user > 21 OR === 21
         $score = $player->getScore();
-        if (str_contains($score, 'Blackjack') || str_contains($score, 'Busted') || str_contains($score, 'Twenty-One') || str_contains($score, 'Five Card Charlie')) {
+        if (str_contains($score, 'Blackjack') 
+            || str_contains($score, 'Busted') 
+            || str_contains($score, 'Twenty-One') 
+            || str_contains($score, 'Five Card Charlie')
+        ) {
             echo $score . "! " . $player->showHand() . PHP_EOL;
             $gameIsActive = false;
             exit();
