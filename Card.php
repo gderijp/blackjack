@@ -16,6 +16,32 @@ class Card
         return $this->suit . $this->value;
     }
 
+    public function score(): int
+    {
+        if (intval($this->value >= 2 && $this->value <= 10)) {
+            return $this->value;
+        }
+
+        switch ($this->value) {
+            case 'A':
+                return 11;
+                break;
+            case 'K':
+                return 10;
+                break;
+            case 'V':
+                return 10;
+                break;
+            case 'B':
+                return 10;
+                break;
+
+            default:
+                throw new InvalidArgumentException("Invalid value" . PHP_EOL);
+                break;
+        }
+    }
+
     private function validateSuit(string $suit): string
     {
         switch ($suit) {

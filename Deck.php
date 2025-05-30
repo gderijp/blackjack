@@ -27,7 +27,7 @@ class Deck
 
         try {
             if (empty($this->cards)) {
-                throw new Exception("Stapel is leeg");
+                throw new Exception("Stapel is leeg") . PHP_EOL;
             }
         } catch (Exception $ex) {
             echo $ex->getMessage();
