@@ -20,14 +20,7 @@ class Dealer
         $this->players[] = $player;
     }
 
-    private function getScore()
-    {
-        foreach ($this->players as $player) {
-            return $this->blackjack->scoreHand($player->hand());
-        }
-    }
-
-    private function getScoreSubstitute(Player $player)
+    private function getScore(Player $player)
     {
         return $this->blackjack->scoreHand($player->hand());
     }
@@ -46,10 +39,10 @@ class Dealer
 
         // Check of iemand blackjack heeft
         foreach ($this->players as $player) {
-            if ($this->checkIfPlayerHasBlackjack($player, $this->getScoreSubstitute($player))) {
-                echo $this->checkIfPlayerHasBlackjack($player, $this->getScoreSubstitute($player));
+            if ($this->checkIfPlayerHasBlackjack($player, $this->getScore($player))) {
+                echo $this->checkIfPlayerHasBlackjack($player, $this->getScore($player));
                 foreach ($this->players as $player) {
-                    echo $player->showHand() . "-> " . $this->getScoreSubstitute($player) . PHP_EOL;
+                    echo $player->showHand() . "-> " . $this->getScore($player) . PHP_EOL;
                 }
                 $gameIsActive = false;
                 exit();
@@ -57,10 +50,7 @@ class Dealer
         }
 
         echo $this->players[0]->showHand() . PHP_EOL;
-        // echo $this->getScoreSubstitute($this->players[0]) . PHP_EOL;
-        // exit();
 
-        // TODO: Per speler (foreach) vraag of die speler een nieuwe kaart wil pakken, als speler geen kaart meer wil, door naar de volgende speler
         $finishedPlayers = [];
         $gameIsActive = true;
         while ($gameIsActive === true) {
@@ -72,7 +62,7 @@ class Dealer
                 $playAgain = true;
                 while ($playAgain) {
                     if ($player->name() == 'Dealer') {
-                        if ($this->getScoreSubstitute($player) <= 18) {
+                        if ($this->getScore($player) <= 18) {
                             $this->giveCardToPlayer($player);
                             echo $player->name() . " pakt een " . $player->getLastCard()->show() . PHP_EOL;
                         } else {
@@ -91,7 +81,7 @@ class Dealer
                         echo $player->name() . " pakt een " . $player->getLastCard()->show() . PHP_EOL;
 
                         // check if the user > 21 OR === 21
-                        $score = $this->getScoreSubstitute($player);
+                        $score = $this->getScore($player);
                         if (str_contains($score, 'Busted') || str_contains($score, 'Twenty-One')) {
                             $playAgain = false;
                             $finishedPlayers[$player->name()] = true;
@@ -112,9 +102,13 @@ class Dealer
             }
         }
 
+        // Geef de eindscore weer
         foreach ($this->players as $player) {
-            echo $player->showHand() . "-> " . $this->getScoreSubstitute($player) . PHP_EOL;
-            // echo $this->getScoreSubstitute($player) . PHP_EOL;
+            echo $player->showHand() . "-> " . $this->getScore($player) . PHP_EOL;
+            // TODO: Finish deze eindscore weergave en test de game
+            // TODO: Voeg een systeem toe die weergeeft wie er gewonnen heeft (meerdere winnaars mogelijk)
+
+            // echo $this->getScore($player) . PHP_EOL;
         }
 
 
