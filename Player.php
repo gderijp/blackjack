@@ -1,17 +1,13 @@
 <?php
 
-require_once 'Blackjack.php';
-
 class Player
 {
     private string $name;
     private array $hand = [];
-    private Blackjack $blackjack;
 
-    public function __construct(string $name, Blackjack $blackjack)
+    public function __construct(string $name)
     {
         $this->name = $name;
-        $this->blackjack = $blackjack;
     }
 
     public function addCard(Card $card)
@@ -29,9 +25,14 @@ class Player
         return $this->name . " heeft " . $cards;
     }
 
-    public function getScore(): string
+    public function name(): string
     {
-        return $this->blackjack->scoreHand($this->hand);
+        return $this->name;
+    }
+
+    public function hand(): array
+    {
+        return $this->hand;
     }
 
     public function getLastCard(): Card
