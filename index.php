@@ -8,6 +8,6 @@ require_once 'Player.php';
 
 
 $dealer = new Dealer(new Blackjack(), new Deck());
-$dealer->addPlayer(new Player('Ischa'));
-$dealer->addPlayer(new Player('Merel'));
+$dealer->addPlayer(new Player('Player'));
+// Add more players if you want!
 $dealer->playGame();

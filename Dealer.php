@@ -25,7 +25,7 @@ class Dealer
         $this->dealCardToAllPlayers();
         $this->dealCardToAllPlayers();
 
-        // Check of iemand blackjack heeft aan het begin
+        // At the beginning of the game, check if a player has blackjack
         foreach ($this->players as $player) {
             $result = $this->checkIfPlayerHasBlackjack($player, $this->getScore($player));
             if ($result) {
@@ -53,7 +53,7 @@ class Dealer
                     if ($player->name() == 'Dealer') {
                         if ($this->getScore($player) < 18) {
                             $this->giveCardToPlayer($player);
-                            echo $player->name() . " pakt een " . $player->getLastCard()->show() . PHP_EOL;
+                            echo $player->name() . " draws an " . $player->getLastCard()->show() . PHP_EOL;
                         } else {
                             $finishedPlayers[$player->name()] = $this->getScore($player);
                         }
@@ -61,13 +61,13 @@ class Dealer
                         break;
                     }
 
-                    $answer = readline($player->name() . "'s beurt. " . $player->showHand() . "'draw' or 'stop'?... ");
+                    $answer = readline($player->name() . "'s turn. " . $player->showHand() . "'draw' or 'stop'?... ");
                     if ($answer == 'stop' || $answer == 's') {
                         $playAgain = false;
                         $finishedPlayers[$player->name()] = $this->getScore($player);
                     } elseif ($answer == 'draw' || $answer == 'd') {
                         $this->giveCardToPlayer($player);
-                        echo $player->name() . " pakt een " . $player->getLastCard()->show() . PHP_EOL;
+                        echo $player->name() . " draws an " . $player->getLastCard()->show() . PHP_EOL;
 
                         $score = $this->getScore($player);
                         if (str_contains($score, 'Busted') || str_contains($score, 'Twenty-One')) {
@@ -81,7 +81,7 @@ class Dealer
                         }
                         $playAgain = false;
                     } else {
-                        echo "Voer 'draw / d' of 'stop / s' in" . PHP_EOL;
+                        echo "enter 'draw / d' or 'stop / s'" . PHP_EOL;
                     }
                 }
             }
@@ -97,12 +97,12 @@ class Dealer
             $score = $this->getScore($player);
             if ($player->name() == 'Dealer') {
                 if (str_contains($dealerScore, 'Busted')) {
-                    echo $player->name() . " is " . $dealerScore . ': ' . $player->showHand() . PHP_EOL;
+                    echo $player->name() . " " . $dealerScore . ': ' . $player->showHand() . PHP_EOL;
                 }
                 continue;
             }
 
-            // Check of de speler gewonnen heeft
+            // Check if player won
             if ($score === 'Busted') {
                 continue;
             }
@@ -111,16 +111,16 @@ class Dealer
             }
         }
 
-        // Check of dealer gewonnen heeft
+        // Check if dealer won
         if (empty($winners)) {
-            echo $dealer->name() . " wint! " . $dealer->showHand() . '-> ' . $dealerScore . PHP_EOL;
+            echo $dealer->name() . " wins! " . $dealer->showHand() . '-> ' . $dealerScore . PHP_EOL;
         } else {
             foreach ($winners as $winner) {
-                echo $winner . " wint!" . PHP_EOL;
+                echo $winner . " wins!" . PHP_EOL;
             }
         }
 
-        // Geef de spelers' score weer
+        // Display players' score
         foreach ($this->players as $player) {
             if ($player->name() == 'Dealer') {
                 continue;
@@ -138,21 +138,33 @@ class Dealer
     {
         if ($dealerScore === 'Busted') {
             return $player->name();
-        } elseif (is_int($playerScore) && is_int($dealerScore) && $playerScore > $dealerScore) {
-            return $player->name();
-        } elseif ($playerScore === 'Twenty-One' && is_int($dealerScore)) {
-            return $player->name();
-        } elseif ($playerScore === 'Five Card Charlie') {
-            return $player->name();
-        } else {
-            return;
         }
+
+        if ($playerScore === 'Busted') {
+            return null;
+        }
+
+        if ($playerScore === 'Twenty-One' && $dealerScore !== 'Twenty-One') {
+            return $player->name();
+        }
+
+        if ($playerScore === 'Five Card Charlie') {
+            return $player->name();
+        }
+
+        if (is_numeric($playerScore) && is_numeric($dealerScore)) {
+            if ((int)$playerScore > (int)$dealerScore) {
+                return $player->name();
+            }
+        }
+
+        return null;
     }
 
     private function checkIfPlayerHasBlackjack($player, $score): string
     {
         if (str_contains($score, 'Blackjack')) {
-            return $player->name() . " wint! " . $score . "!" . PHP_EOL;
+            return $player->name() . " wins! " . $score . "!" . PHP_EOL;
         } else {
             return '';
         }

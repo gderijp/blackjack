@@ -22,7 +22,7 @@ class Player
             $cards .= $card->show() . " ";
         }
 
-        return $this->name . " heeft " . $cards;
+        return $this->name . " has " . $cards;
     }
 
     public function name(): string
