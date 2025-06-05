@@ -20,36 +20,25 @@ class Dealer
         $this->players[] = $player;
     }
 
-    private function getScore(Player $player)
-    {
-        return $this->blackjack->scoreHand($player->hand());
-    }
-
-    private function checkIfPlayerHasBlackjack($player, $score)
-    {
-        if (str_contains($score, 'Blackjack')) {
-            return $player->name() . " wint! " . $score . "!" . PHP_EOL;
-        }
-    }
-
     public function playGame()
     {
         $this->dealCardToAllPlayers();
         $this->dealCardToAllPlayers();
 
-        // Check of iemand blackjack heeft
+        // Check of iemand blackjack heeft aan het begin
         foreach ($this->players as $player) {
-            if ($this->checkIfPlayerHasBlackjack($player, $this->getScore($player))) {
-                echo $this->checkIfPlayerHasBlackjack($player, $this->getScore($player));
+            $result = $this->checkIfPlayerHasBlackjack($player, $this->getScore($player));
+            if ($result) {
+                echo $result;
                 foreach ($this->players as $player) {
                     echo $player->showHand() . "-> " . $this->getScore($player) . PHP_EOL;
                 }
-                $gameIsActive = false;
                 exit();
             }
         }
 
-        echo $this->players[0]->showHand() . PHP_EOL;
+        $dealer = $this->players[0];
+        echo $dealer->showHand() . PHP_EOL;
 
         $finishedPlayers = [];
         $gameIsActive = true;
@@ -62,11 +51,11 @@ class Dealer
                 $playAgain = true;
                 while ($playAgain) {
                     if ($player->name() == 'Dealer') {
-                        if ($this->getScore($player) <= 18) {
+                        if ($this->getScore($player) < 18) {
                             $this->giveCardToPlayer($player);
                             echo $player->name() . " pakt een " . $player->getLastCard()->show() . PHP_EOL;
                         } else {
-                            $finishedPlayers[$player->name()] = true;
+                            $finishedPlayers[$player->name()] = $this->getScore($player);
                         }
                         $playAgain = false;
                         break;
@@ -75,101 +64,97 @@ class Dealer
                     $answer = readline($player->name() . "'s beurt. " . $player->showHand() . "'draw' or 'stop'?... ");
                     if ($answer == 'stop' || $answer == 's') {
                         $playAgain = false;
-                        $finishedPlayers[$player->name()] = true;
+                        $finishedPlayers[$player->name()] = $this->getScore($player);
                     } elseif ($answer == 'draw' || $answer == 'd') {
                         $this->giveCardToPlayer($player);
                         echo $player->name() . " pakt een " . $player->getLastCard()->show() . PHP_EOL;
 
-                        // check if the user > 21 OR === 21
                         $score = $this->getScore($player);
                         if (str_contains($score, 'Busted') || str_contains($score, 'Twenty-One')) {
                             $playAgain = false;
-                            $finishedPlayers[$player->name()] = true;
+                            $finishedPlayers[$player->name()] = $this->getScore($player);
                         } elseif (str_contains($score, 'Five Card Charlie')) {
                             echo $score . "! " . $player->showHand() . PHP_EOL;
                             $playAgain = false;
-                            $finishedPlayers[$player->name()] = true;
+                            $finishedPlayers[$player->name()] = $this->getScore($player);
                             $gameIsActive = false;
                         }
+                        $playAgain = false;
                     } else {
                         echo "Voer 'draw / d' of 'stop / s' in" . PHP_EOL;
                     }
                 }
             }
-            // echo var_dump($finishedPlayers);
             if (count($finishedPlayers) === (count($this->players))) {
                 $gameIsActive = false;
             }
         }
 
-        // Geef de eindscore weer
-        foreach ($this->players as $player) {
-            echo $player->showHand() . "-> " . $this->getScore($player) . PHP_EOL;
-            // TODO: Finish deze eindscore weergave en test de game
-            // TODO: Voeg een systeem toe die weergeeft wie er gewonnen heeft (meerdere winnaars mogelijk)
+        $winners = [];
+        $dealerScore = $this->getScore($dealer);
 
-            // echo $this->getScore($player) . PHP_EOL;
+        foreach ($this->players as $player) {
+            $score = $this->getScore($player);
+            if ($player->name() == 'Dealer') {
+                if (str_contains($dealerScore, 'Busted')) {
+                    echo $player->name() . " is " . $dealerScore . ': ' . $player->showHand() . PHP_EOL;
+                }
+                continue;
+            }
+
+            // Check of de speler gewonnen heeft
+            if ($score === 'Busted') continue;
+            if (null !== ($this->playerWon($player, $score, $dealerScore))) {
+                $winners[] = $this->playerWon($player, $score, $dealerScore);
+            }
         }
 
+        // Check of dealer gewonnen heeft
+        if (empty($winners)) {
+            echo $dealer->name() . " wint! " . $dealer->showHand() . '-> ' . $dealerScore . PHP_EOL;
+        } else {
+            foreach ($winners as $winner) {
+                echo $winner . " wint!" . PHP_EOL;
+            }
+        }
 
-        // while ($gameIsActive === true) {
-        //     $playAgain = readline("Nieuwe kaart (n) of stoppen (s)?... ");
-        //     if ($playAgain === 's') {
-        //         // echo $this->getScore() . "! " . $this->showHand() . PHP_EOL;
-        //         $gameIsActive = false;
-        //         exit();
-        //     } elseif ($playAgain === 'n') {
-        //         // $player->addCard($deck->drawCard());
-        //         // echo "Je kreeg een " . $player->getLastCard()->show() . PHP_EOL;
-
-        //         // // check if the user > 21 OR === 21
-        //         // $score = $player->getScore();
-        //         // if (
-        //         //     str_contains($score, 'Blackjack')
-        //         //     || str_contains($score, 'Busted')
-        //         //     || str_contains($score, 'Twenty-One')
-        //         //     || str_contains($score, 'Five Card Charlie')
-        //         // ) {
-        //         //     echo $score . "! " . $player->showHand() . PHP_EOL;
-        //         //     $gameIsActive = false;
-        //         //     exit();
-        //         // }
-        //     } else {
-        //         echo "Voer 'n' of 's' in" . PHP_EOL;
-        //     }
-        // }
+        // Geef de spelers' score weer
+        foreach ($this->players as $player) {
+            if ($player->name() == 'Dealer') {
+                continue;
+            }
+            echo $player->showHand() . "-> " . $this->getScore($player) . PHP_EOL;
+        }
     }
 
-    // public function playGame()
-    // {
-    //     $gameIsActive = true;
-    //     while ($gameIsActive) {
-    //         $playAgain = readline("Nieuwe kaart (n) of stoppen (s)?... ");
-    //         if ($playAgain === 's') {
-    //             echo $this->getScore() . "! " . $this->showHand() . PHP_EOL;
-    //             $gameIsActive = false;
-    //             exit();
-    //         } elseif ($playAgain === 'n') {
-    //             $player->addCard($deck->drawCard());
-    //             echo "Je kreeg een " . $player->getLastCard()->show() . PHP_EOL;
+    private function getScore(Player $player): string
+    {
+        return $this->blackjack->scoreHand($player->hand());
+    }
 
-    //             // check if the user > 21 OR === 21
-    //             $score = $player->getScore();
-    //             if (
-    //                 str_contains($score, 'Blackjack')
-    //                 || str_contains($score, 'Busted')
-    //                 || str_contains($score, 'Twenty-One')
-    //                 || str_contains($score, 'Five Card Charlie')
-    //             ) {
-    //                 echo $score . "! " . $player->showHand() . PHP_EOL;
-    //                 $gameIsActive = false;
-    //                 exit();
-    //             }
-    //         } else {
-    //             echo "Voer 'n' of 's' in" . PHP_EOL;
-    //         }
-    //     }
-    // }
+    private function playerWon(Player $player, string $playerScore, string $dealerScore)
+    {
+        if ($dealerScore === 'Busted') {
+            return $player->name();
+        } elseif (is_int($playerScore) && is_int($dealerScore) && $playerScore > $dealerScore) {
+            return $player->name();
+        } elseif ($playerScore === 'Twenty-One' && is_int($dealerScore)) {
+            return $player->name();
+        } elseif ($playerScore === 'Five Card Charlie') {
+            return $player->name();
+        } else {
+            return;
+        }
+    }
+
+    private function checkIfPlayerHasBlackjack($player, $score): string
+    {
+        if (str_contains($score, 'Blackjack')) {
+            return $player->name() . " wint! " . $score . "!" . PHP_EOL;
+        } else {
+            return '';
+        }
+    }
 
     private function giveCardToPlayer(Player $player)
     {
@@ -181,15 +166,5 @@ class Dealer
         foreach ($this->players as $player) {
             $player->addCard($this->deck->drawCard());
         }
-    }
-
-    public function showDeck(): Deck
-    {
-        return $this->deck;
-    }
-
-    public function showPlayers(): array
-    {
-        return $this->players;
     }
 }
