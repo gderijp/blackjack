@@ -103,7 +103,9 @@ class Dealer
             }
 
             // Check of de speler gewonnen heeft
-            if ($score === 'Busted') continue;
+            if ($score === 'Busted') {
+                continue;
+            }
             if (null !== ($this->playerWon($player, $score, $dealerScore))) {
                 $winners[] = $this->playerWon($player, $score, $dealerScore);
             }
