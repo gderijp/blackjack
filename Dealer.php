@@ -106,7 +106,7 @@ class Dealer
             if ($score === 'Busted') {
                 continue;
             }
-            if (null !== ($this->playerWon($player, $score, $dealerScore))) {
+            if ($this->playerWon($player, $score, $dealerScore) !== null) {
                 $winners[] = $this->playerWon($player, $score, $dealerScore);
             }
         }
